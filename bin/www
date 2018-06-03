@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+const Koa = require('koa');
+
+const middlewares = require('./../src/middlewares');
+const config = require('./../src/config');
+const router = require('./../src/routes');
+const logger = require('./../src/util/logger');
+const { sequelize } = require('./../src/models');
+
+const log = logger(module);
+const app = new Koa();
+
+app.use(middlewares);
+app.use(router.routes(), router.allowedMethods());
+
+const { port } = config.server;
+app.listen(port, async () => {
+    await sequelize.sync();
+    log.debug(`Server listening on port ${port}`);
+});
